@@ -4,9 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import image from "../images/authPageSide.png";
 import { api_base_url } from '../helper';
 
-const SignUp = () => {
-  const [username, setUsername] = useState("");
-  const [name, setName] = useState("");
+const Login = () => {
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
 
@@ -16,24 +14,25 @@ const SignUp = () => {
 
   const submitForm = (e) => {
     e.preventDefault();
-    fetch(api_base_url + "/signUp",{
+    fetch(api_base_url + "/login",{
       mode: "cors",
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        username: username,
-        name: name,
         email: email,
         password: pwd
       })
-    }).then((res)=>res.json()).then((data)=>{
+    }).then(res => res.json()).then(data => {
       if(data.success === true){
-        alert("Account created successfully");
-        navigate("/login"); 
-      }
-      else{
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("isLoggedIn", true);
+        localStorage.setItem("userId", data.userId);
+        setTimeout(() => {
+          window.location.href = "/"
+        }, 200);
+      } else {
         setError(data.message);
       }
     })
@@ -45,13 +44,6 @@ const SignUp = () => {
         <div className="left w-[35%]">
           <img className='w-[200px]' src={logo} alt="" />
           <form onSubmit={submitForm} className='w-full mt-[60px]' action="">
-            <div className="inputBox">
-              <input required onChange={(e)=>{setUsername(e.target.value)}} value={username} type="text" placeholder='Username'/>
-            </div>
-
-            <div className="inputBox">
-              <input required onChange={(e)=>{setName(e.target.value)}} value={name} type="text" placeholder='Name'/>
-            </div>
 
             <div className="inputBox">
               <input required onChange={(e)=>{setEmail(e.target.value)}} value={email} type="email" placeholder='Email'/>
@@ -61,11 +53,11 @@ const SignUp = () => {
               <input required onChange={(e)=>{setPwd(e.target.value)}} value={pwd} type="password" placeholder='Password'/>
             </div>
 
-            <p className='text-[gray]'>Already have an account <Link to="/login" className='text-[#00AEEF]'>login</Link></p>
-
+            <p className='text-[gray]'>Don't have an account <Link to="/signUp" className='text-[#00AEEF]'>Sign Up</Link></p>
+            
             <p className='text-red-500 text-[14px] my-2'>{error}</p>
 
-            <button className="btnBlue w-full mt-[20px]">Sign Up</button>
+            <button className="btnBlue w-full mt-[20px]">Login</button>
           </form>
         </div>
         <div className="right w-[55%]">
@@ -76,4 +68,4 @@ const SignUp = () => {
   )
 }
 
-export default SignUp
+export default Login
